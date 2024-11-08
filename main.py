@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from fastapi import HTTPException
 from typing import List
-from pydantic import BaseClass
+from pydantic import BaseModel
 
 
 events = [
@@ -11,7 +12,7 @@ events = [
         'publisher': '1xDevs',
         'event_date': '2024-03-02',
         'guests': 10,
-        'lanuage': 'Hindi'
+        'language': 'Hindi'
     },
     {
         'id': 2,
@@ -20,7 +21,7 @@ events = [
         'publisher': '1xDevs',
         'event_date': '2024-12-02',
         'guests': 1,
-        'lanuage': 'English'
+        'language': 'English'
     },
     {
         'id': 3,
@@ -29,7 +30,7 @@ events = [
         'publisher': '100xDevs',
         'event_date': '2024-11-12',
         'guests': 0,
-        'lanuage': 'English'
+        'language': 'English'
     },
     {
         'id': 4,
@@ -38,7 +39,7 @@ events = [
         'publisher': '100xDevs',
         'event_date': '2024-11-07',
         'guests': 1,
-        'lanuage': 'English'
+        'language': 'English'
     },
     {
         'id': 5,
@@ -47,34 +48,42 @@ events = [
         'publisher': '10xCoffee',
         'event_date': '2024-11-18',
         'guests': 30,
-        'lanuage': ':any'
+        'language': ':any'
     }
 ]
 
-class Event(BaseClass):
+class Event(BaseModel):
     id: int
     name: str
     speaker: str
     publisher: str
     event_date: str
-    guest: int
+    guests: int
     language: str
 
 
 app = FastAPI()
 
 @app.get('/event', response_model=List[Event])
-async def getAllEvents():
+async def getAllEvents() -> dict:
     return events
 
-@app.post('/event')
-async def createEvents(data):
-    pass
 
-@app.post('/event/{event_id}')
-async def getEventById(event_id: str):
-    pass
+@app.post('/event', status_code=status.HTTP_201_CREATED)
+async def createEvents(event_data: Event) -> dict:
+    new_event = event_data.model_dump()
+
+    events.append(new_event)
+    return new_event
+
+@app.get('/event/{event_id}')
+async def getEventById(event_id: int) -> dict:
+    for data in events:
+        if data['id'] == event_id:
+            return data
+        
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event no t found')
 
 @app.delete('/event/')
-async def deleteEventById(event_id: str):
+async def deleteEventById(event_id: str) -> dict:
     pass
