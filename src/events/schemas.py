@@ -7,6 +7,7 @@ class Event(BaseModel):
     publisher: str
     event_date: str
     guests: int
+    ticket: int
     language: str
 
 class EventUpdateModel(BaseModel):

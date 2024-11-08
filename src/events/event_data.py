@@ -6,6 +6,7 @@ events = [
         'publisher': '1xDevs',
         'event_date': '2024-03-02',
         'guests': 10,
+        'ticket': 100,
         'language': 'Hindi'
     },
     {
@@ -15,6 +16,7 @@ events = [
         'publisher': '1xDevs',
         'event_date': '2024-12-02',
         'guests': 1,
+        'ticket': 100,
         'language': 'English'
     },
     {
@@ -24,6 +26,7 @@ events = [
         'publisher': '100xDevs',
         'event_date': '2024-11-12',
         'guests': 0,
+        'ticket': 100,
         'language': 'English'
     },
     {
@@ -33,6 +36,7 @@ events = [
         'publisher': '100xDevs',
         'event_date': '2024-11-07',
         'guests': 1,
+        'ticket': 100,
         'language': 'English'
     },
     {
@@ -42,6 +46,7 @@ events = [
         'publisher': '10xCoffee',
         'event_date': '2024-11-18',
         'guests': 30,
+        'ticket': 100,
         'language': ':any'
     }
 ]
