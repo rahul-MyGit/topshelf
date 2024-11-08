@@ -61,6 +61,12 @@ class Event(BaseModel):
     guests: int
     language: str
 
+class EventUpdateModel(BaseModel):
+    name: str
+    speaker: str
+    publisher: str
+    guests: int
+    language: str
 
 app = FastAPI()
 
@@ -72,18 +78,36 @@ async def getAllEvents() -> dict:
 @app.post('/event', status_code=status.HTTP_201_CREATED)
 async def createEvents(event_data: Event) -> dict:
     new_event = event_data.model_dump()
-
     events.append(new_event)
     return new_event
 
+
 @app.get('/event/{event_id}')
 async def getEventById(event_id: int) -> dict:
-    for data in events:
-        if data['id'] == event_id:
-            return data
-        
+    for event in events:
+        if event['id'] == event_id:
+            return event    
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event no t found')
 
-@app.delete('/event/')
-async def deleteEventById(event_id: str) -> dict:
-    pass
+
+@app.patch('/event/{event_id}')
+async def updateEventById(event_id: int, updateData: EventUpdateModel) -> dict:
+    for event in events:
+        if event['id'] == event_id:
+            event['name'] = updateData.name
+            event['speaker'] = updateData.speaker
+            event['publisher'] = updateData.publisher
+            event['guests'] = updateData.guests
+            event['language'] = updateData.language
+            return event
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event not found')
+
+
+@app.delete('/event/{event_id}' , status_code=status.HTTP_204_NO_CONTENT)
+async def deleteEventById(event_id: int):
+    for event in events:
+        if event['id'] == event_id:
+            events.remove(event)
+            return {}
+        
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event not found')
