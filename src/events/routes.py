@@ -1,50 +1,52 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
-from src.events.event_data import events
 from src.events.schemas import Event, EventUpdateModel
 from typing import List
+from src.db.main import get_session
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.events.service import EventService
 
 
 event_router = APIRouter()
+event_service = EventService()
 
 @event_router.get('/', response_model=List[Event])
-async def getAllEvents() -> dict:
+async def get_all_events(session: AsyncSession = Depends(get_session)):
+    events = await event_service.get_all_events(session)
     return events
 
 
-@event_router.post('/', status_code=status.HTTP_201_CREATED)
-async def createEvents(event_data: Event) -> dict:
-    new_event = event_data.model_dump()
-    events.append(new_event)
+@event_router.post('/', status_code=status.HTTP_201_CREATED, response_model=Event)
+async def createEvents(event_data: Event, session: AsyncSession = Depends(get_session)) -> dict:
+    new_event = await event_service.create_event(event_data, session)
     return new_event
 
 
-@event_router.get('/{event_id}')
-async def getEventById(event_id: int) -> dict:
-    for event in events:
-        if event['id'] == event_id:
-            return event    
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event no t found')
+@event_router.get('/{event_uid}')
+async def getEventById(event_uid: int, session: AsyncSession = Depends(get_session)) -> dict:
+    event = await event_service.get_event(event_uid, session)
+
+    if event:
+        return
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event no t found')
 
 
-@event_router.patch('/{event_id}')
-async def updateEventById(event_id: int, updateData: EventUpdateModel) -> dict:
-    for event in events:
-        if event['id'] == event_id:
-            event['name'] = updateData.name
-            event['speaker'] = updateData.speaker
-            event['publisher'] = updateData.publisher
-            event['guests'] = updateData.guests
-            event['language'] = updateData.language
-            return event
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event not found')
+@event_router.patch('/{event_uid}')
+async def updateEventById(event_uid: int, event_data: EventUpdateModel, session: AsyncSession = Depends(get_session)) -> dict:
+    updated_event = await event_service.update_event(event_uid, event_data, session)
+
+    if updated_event:
+        return updated_event
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event not found')
 
 
-@event_router.delete('/{event_id}' , status_code=status.HTTP_204_NO_CONTENT)
-async def deleteEventById(event_id: int):
-    for event in events:
-        if event['id'] == event_id:
-            events.remove(event)
-            return {}
-        
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event not found')
+@event_router.delete('/{event_uid}' , status_code=status.HTTP_204_NO_CONTENT)
+async def deleteEventById(event_uid: int, session:AsyncSession = Depends(get_session)):
+    delete_event = await event_service.delete_event(event_uid, session)
+
+    if delete_event:
+        return None
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Event not found')
