@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
-from src.events.schemas import Event, EventUpdateModel
+from src.events.schemas import Event, EventUpdateModel, EventcreateModel
 from typing import List
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -17,7 +17,8 @@ async def get_all_events(session: AsyncSession = Depends(get_session)):
 
 
 @event_router.post('/', status_code=status.HTTP_201_CREATED, response_model=Event)
-async def createEvents(event_data: Event, session: AsyncSession = Depends(get_session)) -> dict:
+async def createEvents(event_data: EventcreateModel, session: AsyncSession = Depends(get_session)) -> dict:
+    print('daada0000000000000000000000000000000000000000000000000000000000000000 ', event_data)
     new_event = await event_service.create_event(event_data, session)
     return new_event
 

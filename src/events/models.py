@@ -22,7 +22,7 @@ class Event(SQLModel, table=True):
     ticket: int
     language: str
     created_at: datetime = Field(sa_column= Column(pg.TIMESTAMP, default=datetime.now))
-    update_at: datetime =  Field(sa_column= Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at: datetime =  Field(sa_column= Column(pg.TIMESTAMP, default=datetime.now))
 
 
     # TODO: WORKING ???

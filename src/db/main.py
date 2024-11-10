@@ -24,7 +24,7 @@ async def init_db():
 async def get_session() -> AsyncSession:
     Session = sessionmaker(
         bind = engine,
-        class_ = AsyncEngine,
+        class_ = AsyncSession,
         expire_on_commit=False
     )
 

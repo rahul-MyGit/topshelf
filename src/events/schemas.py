@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 import uuid;
-from datetime import datetime
+from datetime import datetime, date
 
 class Event(BaseModel):
     uid: uuid.UUID
     name: str
     speaker: str
     publisher: str
-    event_date: str
+    event_date: date
     guests: int
     ticket: int
     language: str

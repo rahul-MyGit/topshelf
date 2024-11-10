@@ -2,6 +2,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from .schemas import EventcreateModel, EventUpdateModel
 from sqlmodel import select, desc
 from .models import Event
+from datetime import datetime
 
 class EventService:
     async def get_all_events(self, session: AsyncSession):
@@ -22,16 +23,20 @@ class EventService:
 
     async def create_event(self, event_data: EventcreateModel, session:AsyncSession):
         event_data_in_dict = event_data.model_dump()
-
-        new_event = Event(
+        try:
+            new_event = Event(
             **event_data_in_dict
-        )
+            )
 
-        session.add(new_event)
-        await session.commit()
+            new_event.event_date = datetime.strptime(event_data_in_dict['event_date'], "%Y-%m-%d")
 
-        return new_event()
-
+            session.add(new_event)
+            await session.commit()
+            print(new_event)
+            return new_event
+        except Exception as e:
+            print(f'Error creatubg event: ', (e))
+            return None
 
     async def update_event(self, event_uid: str, event_data: EventUpdateModel, session:AsyncSession):
         event_to_update = self.get_event(event_uid, session)
