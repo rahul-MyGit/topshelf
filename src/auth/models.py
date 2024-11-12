@@ -18,7 +18,7 @@ class User(SQLModel, table=True):
 
     username: str
     email: str
-    password: str
+    password: str = Field(exclude=True)
     firstname: str
     lastname: str
     isverify: bool = Field(default=True)
