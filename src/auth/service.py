@@ -1,4 +1,4 @@
-from .schemas import UserCreateModel
+from .schemas import UserCreateModel, UserLoginModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from .models import User
@@ -33,6 +33,7 @@ class UserService:
             print(f'Error while creating the User', (e))
             return None
 
+
     async def exist_user(self, email: str, session: AsyncSession):
         user = await self.get_user_by_email(email, session)
 
@@ -40,3 +41,6 @@ class UserService:
             return False
         else:
             return True
+        
+
+    

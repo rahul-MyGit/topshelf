@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from src.events.routes import event_router
+from src.auth.routes import user_router
 from src.db.main import init_db
 from contextlib import asynccontextmanager
 
@@ -20,3 +21,4 @@ app = FastAPI(
 )
 
 app.include_router(event_router, prefix=f'/api/{version}/event', tags=['event'])
+app.include_router(user_router, prefix=f'/api/{version}/user', tags=['user'])

@@ -5,7 +5,7 @@ from datetime import datetime
 class UserCreateModel(BaseModel):
 
     firstname : str = Field(max_length=50)
-    lastnname: str = Field(max_langth=40)
+    lastname: str = Field(max_langth=40)
     username: str = Field(max_length=30)
     email: str = Field(max_length=50)
     password: str = Field( min_length=6)
